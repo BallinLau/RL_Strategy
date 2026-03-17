@@ -1,9 +1,3 @@
-# Data and generated artifacts
-data/
-cache/
-models/
-outputs/
-
 # Local tooling artifacts
 .kiro/
 .codex*
@@ -14,3 +8,7 @@ __pycache__/
 *.pyo
 *.pyd
 .DS_Store
+
+# Only exclude CSV files (user requirement)
+*.csv
+*.pth
