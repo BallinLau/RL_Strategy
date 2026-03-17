@@ -1,0 +1,127 @@
+# 训练配置文件 (Training Configuration)
+
+# 数据配置
+data:
+  data_path: "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/filtered"    # 数据路径（绝对路径）
+  symbols: ["600030", "600048", "600277", "600315", "600383", "600418", "600481", "600601", "600732", "600837", "601127", "601162"]  # 12只股票（使用数据中实际存在的股票代码）
+  train_start_date: "2022-01-01" # 训练开始日期（使用全部3年数据）
+  train_end_date: "2024-12-31"   # 训练结束日期（3年数据，通过采样优化速度）
+  test_start_date: "2025-01-01"  # 测试开始日期（用2025年测试）
+  test_end_date: "2025-12-31"    # 测试结束日期
+  train_ratio: 0.7              # 训练集比例
+  val_ratio: 0.15               # 验证集比例
+
+# 训练参数
+training:
+  num_episodes: 40              # 针对性优化阶段：先做40个episode快速验证
+  save_freq: 5                  # 模型保存频率（每5个episode保存一次）
+  eval_freq: 5                  # 评估频率
+  log_freq: 1                   # 日志记录频率
+  output_dir: "outputs/training_opt_v1" # 输出目录（与基线隔离）
+  incremental_save_freq: 10000  # 增量checkpoint保存频率（每10000步保存一次，防止训练中断）
+  
+  # 增强版训练参数
+  stage1_episodes: 200          # 探索阶段episode数
+  stage2_episodes: 500          # 开发阶段episode数
+  stage3_episodes: 300          # 微调阶段episode数
+  max_episodes: 1000            # 最大episode数（早停机制）
+  eval_frequency: 10            # 评估频率（早停机制）
+  early_stopping_patience: 5    # 早停耐心值
+
+# 环境配置
+environment:
+  initial_capital: 1000000      # 初始资金
+  period_minutes: 20            # 基础数据周期（与当前filtered数据一致：20分钟bar）
+  switch_period_multiplier: 1   # 基础决策周期=20分钟，动态状态下再放大
+  transaction_cost: 0.0005          # 交易成本（0.05%，合理摩擦）
+  dynamic_switch: true          # 是否启用动态切换
+  state_update_frequency: "dynamic" # 状态更新频率
+  allow_short: false            # 分钟级A股场景先禁做空，降低负收益来源
+  rebalance_tolerance: 0.005    # 提高调仓灵敏度
+  max_trade_fraction: 0.05      # 放宽单次交易上限，避免仓位过轻
+  min_signal_threshold: 0.08    # 忽略弱信号，减少噪声交易
+  signal_power: 1.5             # 强信号权重放大，提高动作可区分性
+  
+  # 分阶段训练配置
+  training_stages:
+    stage1:  # 快速探索阶段
+      data_sample_ratio: 0.1    # 使用10%数据
+      period_minutes: 480       # 8小时周期
+      episodes: 20
+    stage2:  # 中等训练阶段  
+      data_sample_ratio: 0.3    # 使用30%数据
+      period_minutes: 240       # 4小时周期
+      episodes: 30
+    stage3:  # 精细训练阶段
+      data_sample_ratio: 1.0    # 使用全部数据
+      period_minutes: 120       # 2小时周期
+      episodes: 50
+
+# 智能体配置
+agent:
+  learning_rate: 0.00003           # 学习率（优化阶段更稳）
+  gamma: 0.99                   # 折扣因子
+  epsilon_start: 0.60           # 初始探索率（减少无效随机）
+  epsilon_end: 0.02             # 最终探索率
+  epsilon_decay: 0.965          # 衰减更快，尽快进入利用阶段
+  target_update_freq: 5         # 目标网络更新频率（更及时）
+  batch_size: 64                # 批次大小
+  buffer_capacity: 100000       # 经验回放缓冲区容量
+  device: "cpu"                # 使用CPU（兼容性最好）
+  train_freq: 1                 # 训练频率（每步训练）
+
+# 奖励函数参数（平衡版 - 增加收益奖励，强制风险暴露）
+reward:
+  # 基础参数（平衡版 - 在修复基础上提高收益激励）
+  alpha: 0.8                    # 收益奖励系数（提高收益激励）
+  beta: 0.2                     # 波动率惩罚系数（适度风险控制）
+  gamma: 0.15                   # 回撤惩罚系数（适度回撤控制）
+  delta: -0.0005                # 切换惩罚系数（进一步降低）
+  eta: 0.15                     # 市场适配性奖励系数
+  theta: 0.0005                 # 策略稳定性轻微奖励系数
+  zeta: 0.1                     # 多样性奖励系数（鼓励策略切换）
+  kappa: 0.4                    # 超额收益奖励系数（相对等权买入持有）
+  
+  # 新增参数（文档要求的功能）
+  history_window: 100           # 历史记录窗口大小
+  performance_weight: 0.3       # 历史表现权重 (w2)
+  cutoff_threshold: 0.7         # 适配性评分截断值
+  base_weight: 0.7              # 基础评分权重 (w1)
+  
+  # 风险参数
+  drawdown_threshold: 0.05      # 回撤阈值 (5%)
+  volatility_lookback: 20       # 波动率计算回看周期
+  
+  # 交易成本参数（合理版 - 降低交易摩擦）
+  commission_rate: 0.0003       # 佣金率 (0.03%)
+  slippage_rate: 0.0002         # 滑点率 (0.02%)
+  market_impact_factor: 0.0001  # 市场冲击系数
+  min_commission: 2.0           # 最低佣金 (元)
+  tax_rate: 0.0001              # 印花税率 (0.01%)
+
+# 资金分配参数
+position:
+  max_position_ratio: 0.3       # 单股票最大仓位比例
+  total_position_ratio: 0.8     # 总仓位上限比例
+
+# 回测配置
+backtest:
+  initial_capital: 1000000      # 初始资金
+  transaction_cost: 0.001       # 交易成本
+
+# 模型配置
+model:
+  model_path: "models"          # 模型保存路径
+
+# 评估配置
+evaluation:
+  num_episodes: 10              # 评估episode数量
+  output_dir: "outputs/evaluation" # 评估输出目录
+
+# 设备配置
+device:
+  use_cuda: true                # 是否使用CUDA
+  cuda_device: 0                # CUDA设备ID
+
+# 随机种子
+seed: 42

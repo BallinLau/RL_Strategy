@@ -1,0 +1,121 @@
+data:
+  data_path: /Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/crsp_ohlc_all
+  symbols_file: /Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/crsp_top100_symbols_2024.csv
+  bar_frequency: daily
+  symbols: []
+  train_start_date: '1990-01-01'
+  train_end_date: '2025-12-31'
+  split_mode: calendar_year
+  test_year: 2025
+  fallback_to_latest_available_test_year: true
+  train_ratio: 0.7
+  val_ratio: 0.15
+training:
+  num_episodes: 30
+  max_steps_per_episode: 2200
+  random_start: true
+  save_freq: 10
+  eval_freq: 5
+  log_freq: 1
+  output_dir: outputs/training_crsp_daily_v3_fullval_oos3_short_gpu
+  incremental_save_freq: 5000
+  use_best_checkpoint_for_eval: true
+  model_selection_metric: val_excess_sharpe
+  selection_sharpe_weight: 0.2
+  imitation_episodes: 8
+  validation_selection_max_timestamps: 0
+  imitation_selection_max_timestamps: 0
+  selection_max_drawdown: 0.18
+  oos_window_count: 3
+  require_all_oos_positive_sharpe: true
+  oos_min_sharpe: 0.0
+environment:
+  initial_capital: 1000000
+  period_minutes: 1440
+  state_lookback_days: 5
+  switch_period_multiplier: 1
+  transaction_cost: 0.0008
+  dynamic_switch: false
+  state_update_frequency: high
+  allow_short: true
+  max_short_per_symbol_ratio: 0.05
+  max_total_short_ratio: 0.15
+  max_position_ratio: 0.16
+  total_position_ratio: 0.9
+  rebalance_tolerance: 0.02
+  max_trade_fraction: 0.03
+  slippage_rate: 0.00015
+  impact_rate: 5.0e-05
+  min_commission: 2.0
+  min_signal_threshold: 0.05
+  signal_power: 1.15
+  profit_lock_enabled: true
+  profit_lock_min_return: 0.08
+  profit_lock_drawdown_threshold: 0.12
+  profit_lock_cooldown_steps: 10
+  profit_lock_safe_action: 0
+  min_action_hold_steps: 8
+agent:
+  learning_rate: 8.0e-05
+  gamma: 0.995
+  epsilon_start: 0.15
+  epsilon_end: 0.01
+  epsilon_decay: 0.992
+  target_update_freq: 5
+  batch_size: 64
+  buffer_capacity: 50000
+  device: cuda
+  train_freq: 1
+  clear_replay_buffer_on_resume: true
+  reset_epsilon_on_resume: true
+  exploration_mode: prior_guided
+  action0_bias: 0.08
+  signal_blend_weight: 0.06
+  random_action_temperature: 1.0
+  loss_type: huber
+  gradient_clip_norm: 0.5
+reward:
+  alpha: 1.0
+  kappa: 0.1
+  beta: 0.02
+  gamma: 0.02
+  delta: -0.0015
+  eta: 0.0
+  theta: 0.0
+  zeta: 0.0
+  history_window: 120
+  performance_weight: 0.2
+  cutoff_threshold: 0.8
+  base_weight: 0.8
+  drawdown_threshold: 0.1
+  volatility_lookback: 20
+  commission_rate: 0.0003
+  slippage_rate: 0.00015
+  market_impact_factor: 5.0e-05
+  min_commission: 2.0
+  tax_rate: 0.0005
+  negative_return_penalty: 0.03
+  terminal_return_bonus: 1.5
+  preserve_history_across_episodes: false
+  reward_mode: excess_dominant
+  excess_reward_weight: 1.0
+  drawdown_penalty_weight: 0.15
+  turnover_penalty_weight: 0.01
+  switch_penalty_weight: 0.1
+  directional_hit_weight: 0.03
+  directional_min_abs_return: 0.0005
+position:
+  max_position_ratio: 0.16
+  total_position_ratio: 0.85
+backtest:
+  initial_capital: 1000000
+  transaction_cost: 0.0008
+model:
+  model_path: models/crsp_daily_v3_fullval_oos3_short_gpu
+evaluation:
+  num_episodes: 1
+  output_dir: outputs/evaluation_crsp_daily_v3_fullval_oos3_short_gpu
+device:
+  use_cuda: true
+  cuda_device: 0
+seed: 42

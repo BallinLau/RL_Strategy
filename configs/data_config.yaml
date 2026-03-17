@@ -1,0 +1,29 @@
+# 数据配置文件
+# Data Configuration
+
+# 数据路径（使用筛选后的100家公司数据）
+data_path: "data/filtered/"
+
+# 股票代码列表
+symbols:
+  - "000001.SZ"
+  - "000002.SZ"
+
+# 数据时间范围
+train_start_date: "2020-01-01"
+train_end_date: "2023-12-31"
+val_start_date: "2024-01-01"
+val_end_date: "2024-06-30"
+test_start_date: "2024-07-01"
+test_end_date: "2024-12-31"
+
+# 基础周期（分钟）
+period_minutes: 20
+
+# 数据预处理选项
+preprocessing:
+  handle_missing: true
+  aggregate: true
+  remove_outliers: true
+  add_time_features: false
+  calculate_returns: true

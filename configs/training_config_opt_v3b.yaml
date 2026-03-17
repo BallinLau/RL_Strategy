@@ -1,0 +1,93 @@
+# v3b 快速验证配置（修复平仓逻辑后）
+
+data:
+  data_path: "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/filtered"
+  symbols: ["600030", "600048", "600277", "600315", "600383", "600418", "600481", "600601", "600732", "600837", "601127", "601162"]
+  train_start_date: "2022-01-01"
+  train_end_date: "2025-12-31"
+  train_ratio: 0.7
+  val_ratio: 0.15
+
+training:
+  num_episodes: 6
+  save_freq: 2
+  eval_freq: 2
+  log_freq: 1
+  output_dir: "outputs/training_opt_v3b"
+  incremental_save_freq: 15000
+
+environment:
+  initial_capital: 1000000
+  period_minutes: 20
+  switch_period_multiplier: 1
+  transaction_cost: 0.0003
+  dynamic_switch: false
+  state_update_frequency: "high"
+  allow_short: false
+  max_short_per_symbol_ratio: 0.05
+  max_total_short_ratio: 0.15
+  max_position_ratio: 0.10
+  total_position_ratio: 0.50
+  rebalance_tolerance: 0.003
+  max_trade_fraction: 0.03
+  slippage_rate: 0.0001
+  impact_rate: 0.00005
+  min_commission: 2.0
+  min_signal_threshold: 0.0
+  signal_power: 1.0
+
+agent:
+  learning_rate: 0.00008
+  gamma: 0.99
+  epsilon_start: 0.25
+  epsilon_end: 0.02
+  epsilon_decay: 0.985
+  target_update_freq: 4
+  batch_size: 64
+  buffer_capacity: 120000
+  device: "cpu"
+  train_freq: 1
+  clear_replay_buffer_on_resume: true
+  reset_epsilon_on_resume: true
+
+reward:
+  alpha: 1.0
+  kappa: 0.15
+  beta: 0.03
+  gamma: 0.03
+  delta: -0.00005
+  eta: 0.0
+  theta: 0.0
+  zeta: 0.0
+  history_window: 100
+  performance_weight: 0.2
+  cutoff_threshold: 0.8
+  base_weight: 0.8
+  drawdown_threshold: 0.10
+  volatility_lookback: 20
+  commission_rate: 0.0002
+  slippage_rate: 0.0001
+  market_impact_factor: 0.00005
+  min_commission: 2.0
+  tax_rate: 0.0001
+
+position:
+  max_position_ratio: 0.10
+  total_position_ratio: 0.50
+
+backtest:
+  initial_capital: 1000000
+  transaction_cost: 0.0003
+
+model:
+  model_path: "models"
+
+evaluation:
+  num_episodes: 1
+  output_dir: "outputs/evaluation"
+
+device:
+  use_cuda: false
+  cuda_device: 0
+
+seed: 42

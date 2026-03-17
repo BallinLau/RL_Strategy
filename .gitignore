@@ -1,0 +1,16 @@
+# Data and generated artifacts
+data/
+cache/
+models/
+outputs/
+
+# Local tooling artifacts
+.kiro/
+.codex*
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
