@@ -112,7 +112,7 @@
 
 ## 运行命令（GPU）
 ```bash
-cd "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system" && \
+cd "/home/fit/zhuyingz/WORK/LiuHao/RL_Strategy" && \
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 \
 /Users/ballinliu/anaconda3/bin/python scripts/train.py \
 --config configs/training_config_crsp_daily_v3_fullval_oos3_short_gpu.yaml

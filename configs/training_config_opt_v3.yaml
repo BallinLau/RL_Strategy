@@ -1,7 +1,7 @@
 # 针对性优化 v3：先解决“极端亏损+空仓塌缩”，再迭代收益
 
 data:
-  data_path: "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/filtered"
+  data_path: "/home/fit/zhuyingz/WORK/LiuHao/RL_Strategy/data/filtered"
   symbols: ["600030", "600048", "600277", "600315", "600383", "600418", "600481", "600601", "600732", "600837", "601127", "601162"]
   train_start_date: "2022-01-01"
   train_end_date: "2025-12-31"

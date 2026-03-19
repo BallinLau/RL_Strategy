@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import warnings
+from tqdm import tqdm
 
 
 class DataLoader:
@@ -80,16 +81,21 @@ class DataLoader:
             raise ValueError(f"在 {self.data_path} 中未找到数据文件")
         
         all_data_frames = []
+        total_rows = 0
         
-        for filepath in self.data_files:
+        print(f"\n开始加载 {len(self.data_files)} 个数据文件...")
+        for filepath in tqdm(self.data_files, desc="加载数据文件", unit="file"):
             try:
                 df = self._load_single_file(filepath)
                 if df is not None and not df.empty:
                     all_data_frames.append(df)
-                    print(f"加载 {os.path.basename(filepath)}: {len(df)} 行")
+                    total_rows += len(df)
+                    tqdm.write(f"✓ {os.path.basename(filepath)}: {len(df):,} 行")
             except Exception as e:
-                print(f"警告: 加载文件 {os.path.basename(filepath)} 失败: {e}")
+                tqdm.write(f"✗ 加载失败 {os.path.basename(filepath)}: {e}")
                 continue
+        
+        print(f"\n总计: 成功加载 {len(all_data_frames)}/{len(self.data_files)} 个文件, {total_rows:,} 行数据")
         
         if not all_data_frames:
             raise ValueError("没有成功加载任何数据文件")

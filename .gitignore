@@ -9,6 +9,23 @@ __pycache__/
 *.pyd
 .DS_Store
 
-# Only exclude CSV files (user requirement)
+# Data and model files (large files >100MB)
 *.csv
 *.pth
+*.pkl
+
+# Cache directories
+cache/
+__pycache__/
+
+# Output directories with large files
+outputs/training_*/
+outputs/evaluation_*/
+models/
+
+# Backtest result JSON files (can be large)
+backtest*/**/*.json
+
+# Keep directory structure but ignore large files
+!outputs/.gitkeep
+!models/.gitkeep

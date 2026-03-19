@@ -10,8 +10,8 @@ import pickle
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Tuple, List

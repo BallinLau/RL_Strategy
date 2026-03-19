@@ -1,8 +1,8 @@
 # CRSP 日度 v2：验证集超额收益选模 + 两阶段训练 + 超额收益主导奖励
 
 data:
-  data_path: "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/crsp_ohlc_all"
-  symbols_file: "/Users/ballinliu/Desktop/PaperWork/林同学/寒假计划/trading_rl_system/data/crsp_top100_symbols_2024.csv"
+  data_path: "/home/fit/zhuyingz/WORK/LiuHao/RL_Strategy/data/crsp_ohlc_all"
+  symbols_file: "/home/fit/zhuyingz/WORK/LiuHao/RL_Strategy/data/crsp_top100_symbols_2024.csv"
   bar_frequency: "daily"
   symbols: []
   train_start_date: "1990-01-01"

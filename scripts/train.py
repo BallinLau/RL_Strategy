@@ -15,6 +15,7 @@ import torch
 import json
 import matplotlib.pyplot as plt
 from datetime import datetime
+from tqdm import tqdm
 
 from src.data.data_loader import DataLoader
 from src.data.data_preprocessor import DataPreprocessor
@@ -910,7 +911,14 @@ def train_model(env: TradingEnvironment, agent: DDQNAgent, config: dict, val_dat
             resume_step_count = resume_state['step_count']
             print(f"\n从Episode {start_episode}, Step {resume_step}恢复训练")
         
-        for episode in range(start_episode, num_episodes + 1):
+        # 创建episode进度条
+        episode_pbar = tqdm(range(start_episode, num_episodes + 1), 
+                           desc="Training Episodes", 
+                           unit="ep",
+                           initial=start_episode-1,
+                           total=num_episodes)
+        
+        for episode in episode_pbar:
             # 从checkpoint恢复时，直接开始新的episode（不需要快进）
             # checkpoint已经保存了网络权重、optimizer状态、epsilon等所有必要信息
             if episode == start_episode and resume_step > 0:
@@ -933,9 +941,9 @@ def train_model(env: TradingEnvironment, agent: DDQNAgent, config: dict, val_dat
             total_steps = 0
             
             if episode == start_episode and resume_step > 0:
-                print(f"  Episode {episode} 开始训练...")
+                episode_pbar.set_postfix({"status": f"resumed ep{episode}"})
             else:
-                print(f"\nEpisode {episode}/{num_episodes} 开始...")
+                episode_pbar.set_postfix({"status": f"running ep{episode}"})
             
             done = False
             while not done:
@@ -1158,10 +1166,12 @@ def train_model(env: TradingEnvironment, agent: DDQNAgent, config: dict, val_dat
             # 更新episode计数
             agent.episode_count = episode
             
-            # 打印episode结果（简化版）
-            print(f"\nEpisode {episode:3d}/{num_episodes} 完成:")
-            print(f"  总收益率: {total_return*100:+7.2f}% | 组合价值: {env.portfolio_value:10,.0f}")
-            print(f"  现金: {env.cash:10,.0f} | 持仓价值: {current_position_value:10,.0f} | Epsilon: {agent.epsilon:.3f}")
+            # 更新进度条信息
+            episode_pbar.set_postfix({
+                "return": f"{total_return*100:+.2f}%",
+                "value": f"{env.portfolio_value:,.0f}",
+                "epsilon": f"{agent.epsilon:.3f}"
+            })
             
             # 详细信息（每5个episode显示一次）
             if episode % 5 == 0:
